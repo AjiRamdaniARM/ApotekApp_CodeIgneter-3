@@ -19,4 +19,11 @@ class Admin extends CI_Controller {
         $this->load->view('admin/components/header', $data);
         $this->load->view('admin/index', $data);
     }
+
+    public function logout() {
+ 		$this->session->sess_destroy();
+		$this->session->set_flashdata('logout', 'Anda telah berhasil logout.');
+		redirect('auth');
+	}
+   
 }
