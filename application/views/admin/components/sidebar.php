@@ -23,6 +23,13 @@
                     <span>Beranda</span></a>
             </li>
 
+            <!-- Nav Penyedia Item -->
+             <li class="nav-item">
+                <a class="nav-link" href="<?= base_url('admin/penyedia') ?>">
+                   <i class="fa-solid fa-boxes-packing"></i>
+                    <span>Penyedia</span></a>
+            </li>
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 
@@ -46,7 +53,7 @@
 
             <!-- logout button -->
             <li class="nav-item">
-                <a class="nav-link collapsed" href="<?= base_url('admin/admin/logout') ?>">
+                <a class="nav-link collapsed" href="<?= base_url('admin/admin/logout ') ?>">
                     <i class="fas fa-right-from-bracket"></i>
                     <span>Keluar Akun</span>
                 </a>

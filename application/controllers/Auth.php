@@ -14,13 +14,23 @@ class Auth extends CI_Controller
 
 	public function index()
 	{
+			$data['title'] = "Apotek Akses";
+			$this->load->view('templates/auth_header', $data);
+			$this->load->view('components/navbar', $data);
+			$this->load->view('auth/akses');
+			$this->load->view('templates/auth_footer');
+	}
+
+	public function loginAdmin() 
+	{
 		$this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email');
 		$this->form_validation->set_rules('password', 'Password', 'required|trim');
 
 		if ($this->form_validation->run() == false) {
-			$data['title'] = "Apotek Login";
+			$data['title'] = "Apotek Akses";
 			$this->load->view('templates/auth_header', $data);
-			$this->load->view('auth/login');
+			$this->load->view('components/navbar', $data);
+			$this->load->view('auth/adminLogin');
 			$this->load->view('templates/auth_footer');
 		} else {
 			$this->_login(); 
@@ -32,10 +42,9 @@ class Auth extends CI_Controller
 		$email = $this->input->post('email', true);
 		$password = $this->input->post('password', true);
 
-		$pengguna = $this->User_model->get_user_by_email($email); // ini return stdClass
+		$pengguna = $this->User_model->get_user_by_email($email); // stdClass
 
 		if ($pengguna) {
-			// Gunakan akses objek -> bukan array []
 			if (password_verify($password, $pengguna->kata_sandi)) {
 				$data = [
 					'email'        => $pengguna->email,
@@ -44,10 +53,10 @@ class Auth extends CI_Controller
 				];
 				$this->session->set_userdata($data);
 
-				// Redirect sesuai akses
+				// Redirect berdasarkan peran
 				switch ($pengguna->akses) {
 					case 'admin':
-						 redirect('admin/admin');
+						redirect('admin/admin');
 						break;
 					case 'owner':
 						redirect('owner/dashboard');
@@ -56,18 +65,31 @@ class Auth extends CI_Controller
 						redirect('kasir/dashboard');
 						break;
 					default:
-						$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Role tidak dikenali!</div>');
-						redirect('auth');
+						$this->session->set_flashdata('message', 
+							'<div class="alert alert-danger alert-dismissible fade show" role="alert">
+								Role tidak dikenali!
+								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+							</div>');
+						redirect('auth/loginAdmin');
 				}
 			} else {
-				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Password salah!</div>');
-				redirect('auth');
+				$this->session->set_flashdata('message', 
+					'<div class="alert alert-danger alert-dismissible fade show" role="alert">
+						Password salah!
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+					</div>');
+				redirect('auth/loginAdmin');
 			}
 		} else {
-			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Email tidak terdaftar!</div>');
-			redirect('auth');
+			$this->session->set_flashdata('message', 
+				'<div class="alert alert-danger alert-dismissible fade show" role="alert">
+					Email tidak terdaftar!
+					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				</div>');
+			redirect('auth/loginAdmin');
 		}
 	}
+
 
 	public function registration()
 	{
