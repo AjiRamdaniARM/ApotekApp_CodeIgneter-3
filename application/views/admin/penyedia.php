@@ -46,9 +46,10 @@
                                         value="<?= $this->input->get('tanggal_masuk'); ?>" 
                                         class="form-control mr-2"
                                     >
-                                    <a href="<?= base_url('admin/penyedia/report_pdf') ?>" target="_blank" class="btn btn-danger mr-2">
+                                    <a href="<?= base_url('admin/penyedia/report_pdf?keyword=' . $this->input->get('keyword') . '&tanggal_masuk=' . $this->input->get('tanggal_masuk')) ?>" target="_blank" class="btn btn-danger mr-2">
                                         Cetak PDF
                                     </a>
+
                                   
                                     <button type="submit" class="btn btn-primary">
                                         Cari
@@ -97,14 +98,15 @@
                                             <td><?= !empty($row['catatan']) ? $row['catatan'] : '-' ?></td>
                                             <td><?= $tanggal . ' ' . $bulan_indonesia . ' ' . $tahun ?></td>
                                             <td>
-                                                <a class="btn btn-warning btn-sm" href="">
+                                                <a class="btn btn-warning btn-sm" href="<?= base_url('admin/penyedia/edited/'.$row['id_penyedia']) ?>">
                                                     <i class="fas fa-edit"></i> 
                                                 </a>
-                                                <form action="<?= base_url('admin/penyedia/delete/'.$row['id_penyedia']) ?>" method="post" style="display:inline;">
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin hapus data?')">
+                                               <form action="<?= base_url('admin/penyedia/delete/'.$row['id_penyedia']) ?>" method="post" style="display:inline;" class="form-delete">
+                                                    <button type="submit" class="btn btn-danger btn-sm btn-delete">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
+
                                             </td>
                                         </tr>
                                         <?php endforeach; ?>
@@ -168,6 +170,31 @@
 
     <!-- Custom scripts for all pages-->
     <script src="<?= base_url('vendor/'); ?>startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js"></script>
+
+    <script>
+        document.querySelectorAll('.form-delete').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // stop form submit dulu
+
+                Swal.fire({
+                    title: 'Yakin hapus data?',
+                    text: "Data yang dihapus tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Kalau user klik "Ya", submit form secara manual
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
+
 
 </body>
 </html>

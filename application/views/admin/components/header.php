@@ -20,5 +20,6 @@
 
     <!-- Custom styles for this template-->
     <link href="<?= base_url('vendor/'); ?>startbootstrap-sb-admin-2-gh-pages/css/sb-admin-2.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </head>

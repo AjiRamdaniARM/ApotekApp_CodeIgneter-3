@@ -12,6 +12,7 @@ class Penyedia extends CI_Controller {
 		$this->load->database(); 
     }
 
+    // === component controller view === //
    public function index()
     {
         $keyword = $this->input->get('keyword');
@@ -33,10 +34,8 @@ class Penyedia extends CI_Controller {
         $this->load->view('admin/components/header', $data);
         $this->load->view('admin/penyedia', $data);
     }
-   
 
-
-
+    // === component controller create === //
     public function create() {
         // Data umum untuk view
         $data['title'] = 'Data Penyedia';
@@ -80,10 +79,43 @@ class Penyedia extends CI_Controller {
         }
     }
 
+     // === component controller edited === //
+    public function edited($id)
+    {
+        $data['title'] = 'Data Penyedia';
+        $data['subTitle'] = 'Edit Data';
+        $data['pengguna'] = $this->db->get_where('pengguna', ['email' => $this->session->userdata('email')])->row_array();
 
-    public function edited() {
+        // Ambil data karyawan berdasarkan ID
+        $data['penyedia'] = $this->db->get_where('penyedia', ['id_penyedia' => $id])->row_array();
 
+        if (!$data['penyedia']) {
+            // Jika data tidak ditemukan
+            redirect('admin/penyedia');
+        }
+
+        // Jika form disubmit
+        if ($this->input->post()) {
+            $updateData = [
+                'nama_penyedia'       => $this->input->post('nama_penyedia'),
+                'no_telp'      => $this->input->post('no_telp'),
+                'alamat'    => $this->input->post('alamat'),
+                'catatan'    => $this->input->post('catatan')
+            ];
+
+            $this->db->where('id_penyedia', $id);
+            $this->db->update('penyedia', $updateData);
+
+            $this->session->set_flashdata('success', 'Data penyedia berhasil diperbarui!');
+            redirect('admin/penyedia');
+        }
+
+        // Tampilkan view edit
+        $this->load->view('admin/components/header', $data);
+        $this->load->view('admin/pages/penyedia/edited', $data);
     }
+
+     // === component controller delete === //
     public function delete($id) {
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->Penyedia_model->delete($id);
@@ -92,37 +124,36 @@ class Penyedia extends CI_Controller {
         redirect('admin/penyedia');
     }
 
-   public function report_pdf()
-{
-    // Ambil parameter filter dari URL (GET)
-    $keyword = $this->input->get('keyword');
-    $tanggal_masuk = $this->input->get('tanggal_masuk');
+     // === component controller report file PDF === //
+ public function report_pdf()
+    {
+        $keyword = $this->input->get('keyword');
+        $tanggal_masuk = $this->input->get('tanggal_masuk');
 
-    $this->db->from('penyedia');
+        $this->db->from('penyedia');
 
-    if (!empty($keyword)) {
-        $this->db->like('nama_penyedia', $keyword);
+        if (!empty($keyword)) {
+            $this->db->like('nama_penyedia', $keyword);
+        }
+
+        if (!empty($tanggal_masuk)) {
+            $this->db->where('DATE(dibuat_di)', $tanggal_masuk);
+        }
+
+        $data['penyedia'] = $this->db->get()->result_array();
+
+        // Load view to HTML
+        $html = $this->load->view('admin/pages/penyedia/penyedia_pdf', $data, true);
+
+        // Load Dompdf
+        $this->load->library('dompdf_gen');
+
+        $this->dompdf->loadHtml($html);
+        $this->dompdf->setPaper('A4', 'portrait');
+        $this->dompdf->render();
+
+        $this->dompdf->stream("laporan_penyedia.pdf", array("Attachment" => false));
     }
-
-    if (!empty($tanggal_masuk)) {
-        $this->db->where('DATE(dibuat_di)', $tanggal_masuk);
-    }
-
-    $data['penyedia'] = $this->db->get()->result_array();
-
-    // Load view ke HTML
-    $html = $this->load->view('admin/pages/penyedia/penyedia_pdf', $data, true);
-
-    // Load Dompdf
-    $this->load->library('dompdf_gen');
-
-    $this->dompdf->loadHtml($html);
-    $this->dompdf->setPaper('A4', 'portrait');
-    $this->dompdf->render();
-
-    // Output PDF ke browser
-    $this->dompdf->stream("laporan_penyedia.pdf", array("Attachment" => false));
-}
 
 
 
