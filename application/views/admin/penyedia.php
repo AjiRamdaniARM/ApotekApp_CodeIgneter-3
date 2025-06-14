@@ -66,6 +66,7 @@
                                             <th>Telepone</th>
                                             <th>Alamat</th>
                                             <th>Suplai Obat</th>
+                                            <th>Status Obat</th>
                                             <th>Catatan</th>
                                             <th>Tanggal Masuk</th>
                                             <th>Aksi</th> 
@@ -94,7 +95,13 @@
                                             <td><?= $row['nama_penyedia'] ?></td>
                                             <td><?= $row['no_telp'] ?></td>
                                             <td><?= $row['alamat'] ?></td>
-                                            <td>0</td>
+                                            <td><?= $row['jumlah_suplai'] ?> Obat</td>
+                                            <td>
+                                                <span style="background:green; color:white; padding:2px 6px; border-radius:4px;">Diterima: <?= $row['jumlah_terima']; ?></span><br>
+                                                <span style="background:red; color:white; padding:2px 6px; border-radius:4px;">Ditolak: <?= $row['jumlah_tolak']; ?></span><br>
+                                                <span style="background:orange; color:white; padding:2px 6px; border-radius:4px;">Proses: <?= $row['jumlah_proses']; ?></span>
+                                            </td>
+
                                             <td><?= !empty($row['catatan']) ? $row['catatan'] : '-' ?></td>
                                             <td><?= $tanggal . ' ' . $bulan_indonesia . ' ' . $tahun ?></td>
                                             <td>

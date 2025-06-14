@@ -11,23 +11,22 @@
                 <!-- End of Topbar -->
                     <?php include('components/navbar.php') ?>
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
-    <!-- Page Heading -->
-    <h1 class="h3 mb-4 text-gray-800">Dashboard Apotek</h1>
-
-    <!-- Cards Row -->
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800"><?= $title ?></h1>
     <div class="row">
-
         <!-- Total Obat -->
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-primary shadow h-100 py-2">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                            Total Obat</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">120</div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Obat</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $total_obat ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-pills fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <i class="fas fa-pills fa-2x text-gray-300"></i>
                 </div>
             </div>
         </div>
@@ -35,13 +34,16 @@
         <!-- Stok Habis -->
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-danger shadow h-100 py-2">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
-                            Stok Habis</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">5</div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Stok Habis</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $stok_habis ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
                 </div>
             </div>
         </div>
@@ -49,62 +51,85 @@
         <!-- Total Transaksi -->
         <div class="col-xl-4 col-md-6 mb-4">
             <div class="card border-left-success shadow h-100 py-2">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                            Total Transaksi</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">340</div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Transaksi</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800"><?= $total_transaksi ?></div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cash-register fa-2x text-gray-300"></i>
+                        </div>
                     </div>
-                    <i class="fas fa-cash-register fa-2x text-gray-300"></i>
                 </div>
             </div>
         </div>
-
     </div>
-
-    <!-- Chart Section -->
-    <div class="card shadow mb-4">
-        <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Statistik Penjualan Obat</h6>
-        </div>
-        <div class="card-body">
-            <canvas id="salesChart" width="100%" height="40"></canvas>
+    <div class="row">
+    <div class="col-md-6">
+        <div class="card shadow mb-3">
+            <div class="card-body">
+                <h5>Total Pendapatan Hari Ini</h5>
+                <h3>Rp <?= number_format($total_today ?? 0, 0, ',', '.') ?></h3>
+            </div>
         </div>
     </div>
-
+    <div class="col-md-6">
+        <div class="card shadow mb-3">
+            <div class="card-body">
+                <h5>Total Pendapatan Keseluruhan</h5>
+                <h3>Rp <?= number_format($total_all ?? 0, 0, ',', '.') ?></h3>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Chart.js -->
+    <!-- Grafik Pendapatan -->
+ <div class="card mt-4">
+    <div class="card-header">
+        <h5 class="m-0">Statistik Pendapatan per Bulan</h5>
+    </div>
+    <div class="card-body">
+        <canvas id="chartPendapatan" height="100"></canvas>
+    </div>
+</div>
+</div>
+
+<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    const salesChart = new Chart(ctx, {
-        type: 'line',
+    const ctx = document.getElementById('chartPendapatan').getContext('2d');
+    const chartPendapatan = new Chart(ctx, {
+        type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun'],
+            labels: <?= $chart_labels ?>,
             datasets: [{
-                label: 'Penjualan Obat',
-                data: [50, 75, 60, 90, 100, 120],
-                borderColor: 'rgba(78, 115, 223, 1)',
-                backgroundColor: 'rgba(78, 115, 223, 0.1)',
-                borderWidth: 2,
-                fill: true,
-                tension: 0.3
+                label: 'Total Pendapatan (Rp)',
+                data: <?= $chart_data ?>,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
             }]
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: { display: false }
-            },
             scales: {
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
                 }
             }
         }
     });
 </script>
+
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
                 <!-- /.container-fluid -->
 

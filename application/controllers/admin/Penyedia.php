@@ -17,15 +17,30 @@ class Penyedia extends CI_Controller {
     {
         $keyword = $this->input->get('keyword');
         $tanggal_masuk = $this->input->get('tanggal_masuk');
-        if (!empty($tanggal_masuk)) {
-            $this->db->where('DATE(dibuat_di)', $tanggal_masuk); // cocokkan hanya bagian tanggal
-        }
-          if (!empty($keyword)) {
-        $this->db->like('nama_penyedia', $keyword);
-        }
-        $data['penyedia'] = $this->db->get('penyedia')->result_array();
 
-        // Data lain
+        // SELECT dengan COUNT untuk jumlah suplai
+       $this->db->select('penyedia.*,
+        COUNT(obat.id_produk_obat) AS jumlah_suplai,
+        SUM(CASE WHEN obat.status = "terima" THEN 1 ELSE 0 END) AS jumlah_terima,
+        SUM(CASE WHEN obat.status = "tolak" THEN 1 ELSE 0 END) AS jumlah_tolak,
+        SUM(CASE WHEN obat.status = "proses" THEN 1 ELSE 0 END) AS jumlah_proses
+        ');
+        $this->db->from('penyedia');
+        $this->db->join('barang_masuk', 'barang_masuk.id_penyedia = penyedia.id_penyedia', 'left');
+        $this->db->join('obat', 'obat.kode_obat = barang_masuk.kode_obat', 'left');
+
+        if (!empty($tanggal_masuk)) {
+            $this->db->where('DATE(barang_masuk.dibuat_di)', $tanggal_masuk);
+        }
+        if (!empty($keyword)) {
+            $this->db->like('penyedia.nama_penyedia', $keyword);
+        }
+
+        $this->db->group_by('penyedia.id_penyedia');
+        $data['penyedia'] = $this->db->get()->result_array();
+
+
+        // Data tambahan
         $data['title'] = 'Data Penyedia';
         $data['subTitle'] = 'Pengelolaan Data';
         $data['pengguna'] = $this->db->get_where('pengguna', ['email' => $this->session->userdata('email')])->row_array();
@@ -34,6 +49,7 @@ class Penyedia extends CI_Controller {
         $this->load->view('admin/components/header', $data);
         $this->load->view('admin/penyedia', $data);
     }
+
 
     // === component controller create === //
     public function create() {

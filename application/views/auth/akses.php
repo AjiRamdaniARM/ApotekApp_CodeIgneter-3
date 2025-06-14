@@ -5,9 +5,9 @@
             <button onclick="window.location.href='<?= base_url('auth/loginAdmin') ?>'" class="btn bg-blue-1 text-white d-flex align-items-center gap-2 p-4">
                 <i class="bi bi-person-badge"></i> Admin
             </button>
-            <!-- <button onclick="window.location.href='<?= base_url('login/kasir') ?>'" class="btn bg-green-1 text-white d-flex align-items-center gap-2 p-4">
+            <button onclick="window.location.href='<?= base_url('login/kasir') ?>'" class="btn bg-green-1 text-white d-flex align-items-center gap-2 p-4">
                 <i class="bi bi-cash-stack"></i> Kasir
-            </button> -->
+            </button>
             <button onclick="window.location.href='<?= base_url('login/owner') ?>'"  class="btn btn-warning d-flex align-items-center gap-2 p-4">
                 <i class="bi bi-person-check"></i> Owner
             </button>

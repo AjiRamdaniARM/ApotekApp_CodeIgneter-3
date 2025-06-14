@@ -30,6 +30,30 @@
                     <span>Penyedia</span></a>
             </li>
 
+             <!-- Nav Obat Item -->
+             <li class="nav-item">
+                <a class="nav-link" href="<?= base_url('admin/obat') ?>">
+                   <i class="fa-solid fa-pills"></i>
+                    <span>Obat</span></a>
+            </li>
+
+               <!-- Nav kasir Item -->
+            <li class="nav-item">
+                <a class="nav-link" href="<?= base_url('admin/kasir') ?>">
+                    <i class="fa-solid fa-cash-register"></i>
+                    <span>Kasir</span>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="<?= base_url('admin/kasir/laporan') ?>">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                    <span>Laporan</span>
+                </a>
+            </li>
+
+
+
             <!-- Divider -->
             <hr class="sidebar-divider">
 
