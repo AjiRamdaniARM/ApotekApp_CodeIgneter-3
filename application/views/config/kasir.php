@@ -48,7 +48,7 @@
               </div>
 
               <!-- Form Transaksi -->
-              <form id="form-transaksi" method="post" action="<?= base_url('admin/kasir/simpan_transaksi') ?>">
+              <form id="form-transaksi" method="post" action="<?= base_url('config/kasir/simpan_transaksi') ?>">
                 <div class="table-responsive">
                   <table class="table table-bordered">
                     <thead class="thead-light">
@@ -69,7 +69,7 @@
                 <input type="text" name="bayar" class="form-control mb-2" placeholder="Jumlah Bayar" required 
     oninput="formatRupiah(this, 'Rp. '); hitungKembalian(this.value)">
 
-                <p class="font-weight-bold">Kembalian: Rp <span id="kembalian">0</span></p>
+                <p class="font-weight-bold">Kembalian: <span id="kembalian">0</span></p>
 
                 <input type="hidden" name="total_hidden" id="total_hidden">
                 <input type="hidden" name="keranjang_data" id="keranjang_data">

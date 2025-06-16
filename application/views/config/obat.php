@@ -31,7 +31,7 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3 d-flex justify-content-between align-items-center">
-                                <a href="<?= base_url('admin/obat/create') ?>" class="btn btn-primary">Tambah Data</a>
+                                <a href="<?= base_url('config/obat/create') ?>" class="btn btn-primary">Tambah Data</a>
                                 <form method="GET" class="form-inline">
 
                                     <!-- Keyword Pencarian -->
@@ -60,7 +60,7 @@
                                     </select>
 
                                     <!-- Tombol Cetak PDF -->
-                                    <a href="<?= base_url('admin/obat/report_pdf?keyword=' . $this->input->get('keyword') . '&tanggal_masuk=' . $this->input->get('tanggal_masuk') . '&status=' . $this->input->get('status')) ?>" target="_blank" class="btn btn-danger mr-2">
+                                    <a href="<?= base_url('config/obat/report_pdf?keyword=' . $this->input->get('keyword') . '&tanggal_masuk=' . $this->input->get('tanggal_masuk') . '&status=' . $this->input->get('status')) ?>" target="_blank" class="btn btn-danger mr-2">
                                         Cetak PDF
                                     </a>
 
@@ -160,10 +160,10 @@
                                     <td><?= $tgl_kadaluarsa_format ?></td>
 
                                     <td>
-                                        <a href="<?= base_url('admin/obat/edited/' . $row['id_produk_obat']); ?>" class="btn btn-warning btn-sm">
+                                        <a href="<?= base_url('config/obat/edited/' . $row['id_produk_obat']); ?>" class="btn btn-warning btn-sm">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="<?= base_url('admin/obat/delete/' . $row['id_produk_obat']); ?>" method="post" class="d-inline form-delete">
+                                        <form action="<?= base_url('config/obat/delete/' . $row['id_produk_obat']); ?>" method="post" class="d-inline form-delete">
                                             <button type="submit" class="btn btn-danger btn-sm btn-delete">
                                                 <i class="fas fa-trash-alt"></i>
                                             </button>

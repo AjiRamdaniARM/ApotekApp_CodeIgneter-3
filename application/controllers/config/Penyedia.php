@@ -30,7 +30,7 @@ class Penyedia extends CI_Controller {
         $this->db->join('obat', 'obat.kode_obat = barang_masuk.kode_obat', 'left');
 
         if (!empty($tanggal_masuk)) {
-            $this->db->where('DATE(barang_masuk.dibuat_di)', $tanggal_masuk);
+            $this->db->where('DATE(penyedia.dibuat_di)', $tanggal_masuk);
         }
         if (!empty($keyword)) {
             $this->db->like('penyedia.nama_penyedia', $keyword);
@@ -46,8 +46,8 @@ class Penyedia extends CI_Controller {
         $data['pengguna'] = $this->db->get_where('pengguna', ['email' => $this->session->userdata('email')])->row_array();
 
         // Load views
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/penyedia', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/penyedia', $data);
     }
 
 
@@ -74,8 +74,8 @@ class Penyedia extends CI_Controller {
         // Jalankan validasi
         if ($this->form_validation->run() == FALSE) {
             // Jika gagal validasi, tampilkan form dengan error
-            $this->load->view('admin/components/header', $data);
-            $this->load->view('admin/pages/penyedia/create', $data);
+            $this->load->view('config/components/header', $data);
+            $this->load->view('config/pages/penyedia/create', $data);
         } else {
             // Jika validasi sukses, simpan data
             $postData = [
@@ -91,7 +91,7 @@ class Penyedia extends CI_Controller {
             $this->session->set_flashdata('success', 'Data penyedia berhasil ditambahkan.');
 
             // Redirect ke halaman daftar penyedia
-            redirect('admin/penyedia');
+            redirect('config/penyedia');
         }
     }
 
@@ -106,7 +106,7 @@ class Penyedia extends CI_Controller {
         $penyedia = $this->db->get_where('penyedia', ['id_penyedia' => $id])->row_array();
         if (!$penyedia) {
             // Redirect jika data tidak ditemukan
-            redirect('admin/penyedia');
+            redirect('config/penyedia');
         }
         $data['penyedia'] = $penyedia;
 
@@ -144,13 +144,13 @@ class Penyedia extends CI_Controller {
                 $this->db->update('penyedia', $updateData);
 
                 $this->session->set_flashdata('success', 'Data penyedia berhasil diperbarui!');
-                redirect('admin/penyedia');
+                redirect('config/penyedia');
             }
         }
 
         // Tampilkan form edit
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/pages/penyedia/edited', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/pages/penyedia/edited', $data);
     }
 
 
@@ -160,7 +160,7 @@ class Penyedia extends CI_Controller {
             $this->Penyedia_model->delete($id);
             $this->session->set_flashdata('success','Data Penyedia berhasil dihapus');
         }
-        redirect('admin/penyedia');
+        redirect('config/penyedia');
     }
 
      // === component controller report file PDF === //
@@ -182,7 +182,7 @@ class Penyedia extends CI_Controller {
         $data['penyedia'] = $this->db->get()->result_array();
 
         // Load view to HTML
-        $html = $this->load->view('admin/pages/penyedia/penyedia_pdf', $data, true);
+        $html = $this->load->view('config/pages/penyedia/penyedia_pdf', $data, true);
 
         // Load Dompdf
         $this->load->library('dompdf_gen');

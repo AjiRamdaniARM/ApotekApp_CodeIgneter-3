@@ -31,7 +31,7 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3 d-flex justify-content-between align-items-center">
-                                <a href="<?= base_url('admin/penyedia/create') ?>" class="btn btn-primary">Tambah Data</a>
+                                <a href="<?= base_url('config/penyedia/create') ?>" class="btn btn-primary">Tambah Data</a>
                                 <form method="GET" class="form-inline">
                                     <input 
                                         type="search" 
@@ -46,7 +46,7 @@
                                         value="<?= $this->input->get('tanggal_masuk'); ?>" 
                                         class="form-control mr-2"
                                     >
-                                    <a href="<?= base_url('admin/penyedia/report_pdf?keyword=' . $this->input->get('keyword') . '&tanggal_masuk=' . $this->input->get('tanggal_masuk')) ?>" target="_blank" class="btn btn-danger mr-2">
+                                    <a href="<?= base_url('config/penyedia/report_pdf?keyword=' . $this->input->get('keyword') . '&tanggal_masuk=' . $this->input->get('tanggal_masuk')) ?>" target="_blank" class="btn btn-danger mr-2">
                                         Cetak PDF
                                     </a>
 
@@ -105,10 +105,10 @@
                                             <td><?= !empty($row['catatan']) ? $row['catatan'] : '-' ?></td>
                                             <td><?= $tanggal . ' ' . $bulan_indonesia . ' ' . $tahun ?></td>
                                             <td>
-                                                <a class="btn btn-warning btn-sm" href="<?= base_url('admin/penyedia/edited/'.$row['id_penyedia']) ?>">
+                                                <a class="btn btn-warning btn-sm" href="<?= base_url('config/penyedia/edited/'.$row['id_penyedia']) ?>">
                                                     <i class="fas fa-edit"></i> 
                                                 </a>
-                                               <form action="<?= base_url('admin/penyedia/delete/'.$row['id_penyedia']) ?>" method="post" style="display:inline;" class="form-delete">
+                                               <form action="<?= base_url('config/penyedia/delete/'.$row['id_penyedia']) ?>" method="post" style="display:inline;" class="form-delete">
                                                     <button type="submit" class="btn btn-danger btn-sm btn-delete">
                                                         <i class="fas fa-trash-alt"></i>
                                                     </button>

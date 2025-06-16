@@ -8,7 +8,7 @@
                     <ol class="breadcrumb bg-light rounded-pill px-3 py-2">
                         <li class="breadcrumb-item"><a href="#">Beranda</a></li>
                         <li class="breadcrumb-item"><a href="#">Masuk</a></li>
-                        <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Admin</li>
+                        <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Kasir</li>
                     </ol>
                 </nav>
 
@@ -23,15 +23,15 @@
                         class="rounded-circle  shadow" 
                         style="width: 120px; height: 120px; object-fit: cover; margin-left: 11em"
                         alt="Foto Profil Admin">
-                    <h5 class="mt-3 fw-semibold text-primary">Login Admin</h5>
+                    <h5 class="mt-3 fw-semibold text-primary">Login Kasir</h5>
                 </div>
 
 
                 <!-- === Form === -->
-                <form action="<?= base_url('auth/loginAdmin') ?>" method="POST" class="px-1">
+                <form action="<?= base_url('auth/loginKasir') ?>" method="POST" class="px-1">
 
                     <!-- Hidden Role -->
-                    <input type="hidden" name="akses" value="admin">
+                    <input type="hidden" name="akses" value="kasir">
 
                     <!-- Email -->
                     <div class="mb-3" style="display: none;">

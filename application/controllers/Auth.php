@@ -27,6 +27,7 @@ class Auth extends CI_Controller
 		$this->form_validation->set_rules('password', 'Password', 'required|trim');
 
 		if ($this->form_validation->run() == false) {
+			$data['email'] = $this->db->get_where('pengguna', ['akses' => 'admin'])->row_array();
 			$data['title'] = "Apotek Akses";
 			$this->load->view('templates/auth_header', $data);
 			$this->load->view('components/navbar', $data);
@@ -37,12 +38,47 @@ class Auth extends CI_Controller
 		}
 	}
 
+	public function loginKasir() 
+	{
+		$this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email');
+		$this->form_validation->set_rules('password', 'Password', 'required|trim');
+
+		if ($this->form_validation->run() == false) {
+			$data['email'] = $this->db->get_where('pengguna', ['akses' => 'kasir'])->row_array();
+			$data['title'] = "Apotek Akses";
+			$this->load->view('templates/auth_header', $data);
+			$this->load->view('components/navbar', $data);
+			$this->load->view('auth/kasirLogin');
+			$this->load->view('templates/auth_footer');
+		} else {
+			$this->_login(); 
+		}
+	}
+
+	public function loginOwner() 
+	{
+		$this->form_validation->set_rules('email', 'Email', 'required|trim|valid_email');
+		$this->form_validation->set_rules('password', 'Password', 'required|trim');
+
+		if ($this->form_validation->run() == false) {
+			$data['email'] = $this->db->get_where('pengguna', ['akses' => 'owner'])->row_array();
+			$data['title'] = "Apotek Akses";
+			$this->load->view('templates/auth_header', $data);
+			$this->load->view('components/navbar', $data);
+			$this->load->view('auth/ownerLogin');
+			$this->load->view('templates/auth_footer');
+		} else {
+			$this->_login(); 
+		}
+	}
+
 	private function _login() 
 	{
-		$email = $this->input->post('email', true);
+		$email  = $this->input->post('email', true);
 		$password = $this->input->post('password', true);
+		$akses  = $this->input->post('akses', true); // Ambil akses dari input form
 
-		$pengguna = $this->User_model->get_user_by_email($email); // stdClass
+		$pengguna = $this->User_model->get_user_by_email($email);
 
 		if ($pengguna) {
 			if (password_verify($password, $pengguna->kata_sandi)) {
@@ -53,16 +89,16 @@ class Auth extends CI_Controller
 				];
 				$this->session->set_userdata($data);
 
-				// Redirect berdasarkan peran
+				// Redirect sesuai role
 				switch ($pengguna->akses) {
 					case 'admin':
-						redirect('admin/admin');
+						redirect('config/dashboard');
 						break;
 					case 'owner':
-						redirect('owner/dashboard');
+						redirect('config/dashboard');
 						break;
 					case 'kasir':
-						redirect('kasir/dashboard');
+						redirect('config/dashboard');
 						break;
 					default:
 						$this->session->set_flashdata('message', 
@@ -70,7 +106,7 @@ class Auth extends CI_Controller
 								Role tidak dikenali!
 								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 							</div>');
-						redirect('auth/loginAdmin');
+						redirect('auth/login' . ucfirst($akses)); // fallback
 				}
 			} else {
 				$this->session->set_flashdata('message', 
@@ -78,7 +114,7 @@ class Auth extends CI_Controller
 						Password salah!
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 					</div>');
-				redirect('auth/loginAdmin');
+				redirect('auth/login' . ucfirst($akses));
 			}
 		} else {
 			$this->session->set_flashdata('message', 
@@ -86,9 +122,10 @@ class Auth extends CI_Controller
 					Email tidak terdaftar!
 					<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 				</div>');
-			redirect('auth/loginAdmin');
+			redirect('auth/login' . ucfirst($akses));
 		}
 	}
+
 
 
 	public function registration()

@@ -1,14 +1,14 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-        <?php $this->load->view('admin/components/sidebar'); ?>
+        <?php $this->load->view('config/components/sidebar'); ?>
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
                 <!-- End of Topbar -->
-                 <?php $this->load->view('admin/components/navbar'); ?>
+                 <?php $this->load->view('config/components/navbar'); ?>
 
                 <!-- Begin Page Content --> <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -20,7 +20,7 @@
     <h6 class="m-0 font-weight-bold text-primary">Input Data Obat</h6>
   </div>
   <div class="card-body">
-    <form method="post" action="<?= base_url('admin/obat/edited_post/'.$obat['id_produk_obat']) ?>">
+    <form method="post" action="<?= base_url('config/obat/edited_post/'.$obat['id_produk_obat']) ?>">
         <!-- === input obat === -->
         <div class="form-group">
             <label>Nama Obat</label>

@@ -1,7 +1,7 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-         <?php $this->load->view('admin/components/sidebar'); ?>
+         <?php $this->load->view('config/components/sidebar'); ?>
 
 
         <!-- Content Wrapper -->
@@ -9,7 +9,7 @@
             <!-- Main Content -->
             <div id="content">
                 <!-- Topbar -->
-                     <?php $this->load->view('admin/components/navbar'); ?>
+                     <?php $this->load->view('config/components/navbar'); ?>
                 <!-- End of Topbar -->
                 <!-- Begin Page Content -->
                 <!-- End of Topbar -->
@@ -21,7 +21,7 @@
                     <h1 class="h3 mb-4 text-gray-800"><?= $subTitle ?></h1>
 
                     <!-- Profile Card -->
-                   <form action="<?= base_url('admin/profile/update') ?>" method="post">
+                   <form action="<?= base_url('config/profile/update') ?>" method="post">
                         <div class="card shadow mb-4">
                             <div class="card-body">
                                 <div class="row">
@@ -56,7 +56,7 @@
                                         </div>
 
                                         <button type="submit" class="btn btn-success mt-3">Simpan Perubahan</button>
-                                        <a href="<?= base_url('admin/profile') ?>" class="btn btn-secondary mt-3">Batal</a>
+                                        <a href="<?= base_url('config/profile') ?>" class="btn btn-secondary mt-3">Batal</a>
                                     </div>
                                 </div>
                             </div>

@@ -2,7 +2,7 @@
 <!-- Page Wrapper -->
 <div id="wrapper">
 
-    <?php include(APPPATH . 'views/admin/components/sidebar.php'); ?>
+    <?php include(APPPATH . 'views/config/components/sidebar.php'); ?>
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -10,7 +10,7 @@
         <!-- Main Content -->
         <div id="content">
 
-            <?php include(APPPATH . 'views/admin/components/navbar.php'); ?>
+            <?php include(APPPATH . 'views/config/components/navbar.php'); ?>
 
             <!-- Begin Page Content -->
             <div class="container-fluid">
@@ -39,6 +39,39 @@
 
                 <!-- Riwayat Transaksi Table -->
                 <div class="card shadow mb-4">
+            <form method="GET" action="<?= base_url('config/kasir/laporan_pdf') ?>" target="_blank" class="mb-3 px-3 py-3">
+                <div class="row">
+                    <div class="col-md-3">
+                        <select name="bulan" class="form-control">
+                            <option value="">-- Pilih Bulan --</option>
+                            <?php for ($b = 1; $b <= 12; $b++): ?>
+                                <option value="<?= $b ?>"><?= date('F', mktime(0, 0, 0, $b, 1)) ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select name="tahun" class="form-control">
+                            <option value="">-- Pilih Tahun --</option>
+                            <?php for ($y = date('Y'); $y >= 2020; $y--): ?>
+                                <option value="<?= $y ?>"><?= $y ?></option>
+                            <?php endfor; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="<?= base_url('config/kasir/laporan_pdf?all=1') ?>" target="_blank" class="btn btn-secondary">
+                            <i class="fas fa-file-alt"></i> Export Semua Data
+                        </a>
+                    </div>
+                </div>
+            </form>
+
+
+
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Riwayat Transaksi</h6>
                     </div>
@@ -61,7 +94,7 @@
                                         <td><?= $t['nama'] ?></td>
                                         <td>Rp <?= number_format($t['total_harga'], 0, ',', '.') ?></td>
                                         <td>
-                                            <a href="<?= base_url('admin/kasir/cetak_struk/' . $t['transaksi_kode']) ?>" target="_blank" class="btn btn-sm btn-primary">
+                                            <a href="<?= base_url('config/kasir/cetak_struk/' . $t['transaksi_kode']) ?>" target="_blank" class="btn btn-sm btn-primary">
                                                 Struk
                                             </a>
                                         </td>

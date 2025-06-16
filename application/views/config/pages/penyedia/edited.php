@@ -1,45 +1,62 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-       <?php include('components/sidebar.php'); ?>
+        <?php $this->load->view('config/components/sidebar'); ?>
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
                 <!-- End of Topbar -->
-                    <?php include('components/navbar.php') ?>
-                <!-- Begin Page Content -->            <!-- Begin Page Content -->
+                 <?php $this->load->view('config/components/navbar'); ?>
+
+                <!-- Begin Page Content --> <!-- Begin Page Content -->
                 <div class="container-fluid">
 
-                    <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800"><?= $subTitle ?></h1>
+    <!-- Page Heading -->
+    <h1 class="h3 mb-4 text-gray-800"><?= $subTitle ?></h1>
 
-                    <!-- Profile Card -->
-                    <div class="card shadow mb-4">
-                        <div class="card-body">
-                            <div class="row">
-                                <!-- Profile Picture -->
-                                <div class="col-md-3 text-center">
-                                    <img src="<?= base_url('vendor/');?>startbootstrap-sb-admin-2-gh-pages/img/undraw_profile_2.svg" class="img-fluid rounded-circle mb-3" alt="Profile Picture">
-                                </div>
+    <!-- component table -->
+   <div class="card shadow mb-4">
+  <div class="card-header py-3">
+    <h6 class="m-0 font-weight-bold text-primary">Input Data Supplier</h6>
+  </div>
+  <div class="card-body">
+    <form method="post" action="<?= base_url('config/penyedia/edited/'.$penyedia['id_penyedia']) ?>">
+      <div class="form-group mb-3">
+        <label for="nama">Nama Penyedia</label>
+        <input type="text" class="form-control" id="nama" name="nama_penyedia" placeholder="Masukkan nama penyedia"  value="<?= isset($penyedia['nama_penyedia']) ? $penyedia['nama_penyedia'] : '' ?>"
+       required>
+        <br>
+        <?php echo form_error('nama_penyedia','<div class="alert alert-danger">', '</div>'); ?>
+      </div>
 
-                                <!-- Profile Info -->
-                                <div class="col-md-9">
-                                    <h4 class="mb-3"><?= $pengguna['nama'] ?></h4>
-                                    <p><strong>Email:</strong> <?= $pengguna['email'] ?></p>
-                                    <p><strong>Role:</strong> <?= $pengguna['akses'] ?></p>
+      <div class="form-group mb-3">
+        <label for="no_telp">No. Telepon</label>
+        <input type="tel" class="form-control" id="no_telp" name="no_telp" value="<?= isset($penyedia['no_telp']) ? $penyedia['no_telp'] : '' ?>" placeholder="Masukkan nomor telepon">
+        <br>
+        <?php echo form_error('no_telp','<div class="alert alert-danger">', '</div>'); ?>
+      </div>
 
-                                    <a href="<?= base_url('admin/profile/edit') ?>" class="btn btn-primary mt-3">Edit Profil</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      <div class="form-group mb-3">
+        <label for="alamat">Alamat</label>
+        <textarea class="form-control" id="alamat" name="alamat" rows="3" value="<?= isset($penyedia['alamat']) ? $penyedia['alamat'] : '' ?>" placeholder="Masukkan alamat penyedia"></textarea>
+      </div>
 
-                </div>
+      <div class="form-group mb-3">
+        <label for="catatan">Catatan</label>
+        <textarea class="form-control" id="catatan" name="catatan" rows="2" value="<?= isset($penyedia['catatan']) ? $penyedia['catatan'] : '' ?>" placeholder="Catatan tambahan (opsional)"></textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Simpan</button>
+      <button type="reset" class="btn btn-secondary">Reset</button>
+    </form>
+  </div>
+</div>
+
+</div>
+
                 <!-- /.container-fluid -->
-
-
             </div>
             <!-- End of Main Content -->
 

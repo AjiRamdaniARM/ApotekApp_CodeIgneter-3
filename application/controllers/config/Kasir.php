@@ -22,11 +22,11 @@ class Kasir extends CI_Controller {
         ])->row_array();
 
         // Ambil data obat dari database
-        $data['obat'] = $this->db->get('obat')->result_array();
+        $data['obat'] = $this->db->get_where('obat',['status' => 'terima'])->result_array();
 
         // Tampilkan halaman kasir
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/kasir', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/kasir', $data);
     }
   public function simpan_transaksi()
 {
@@ -74,7 +74,7 @@ class Kasir extends CI_Controller {
 
     // Redirect ke struk
     $this->session->set_flashdata('success', 'Transaksi berhasil disimpan!');
-    redirect('admin/kasir/cetak_struk/' . $kode_transaksi);
+    redirect('config/kasir/cetak_struk/' . $kode_transaksi);
 }
 
 
@@ -93,7 +93,7 @@ public function cetak_struk($kode_transaksi)
     $data['transaksi'] = $transaksi;
     $data['detail'] = $detail;
 
-    $this->load->view('admin/pages/kasir/struk', $data);
+    $this->load->view('config/pages/kasir/struk', $data);
 }
 
 public function laporan()
@@ -108,7 +108,7 @@ public function laporan()
     $data['transaksi'] = $this->db->select('t.*, p.nama')
         ->from('transaksi t')
         ->join('pengguna p', 't.id_pengguna = p.id_pengguna')
-        ->order_by('tanggal_transaksi', 'DESC')
+        ->order_by('dibuat_di', 'DESC')
         ->get()->result_array();
 
     // Hitung total pendapatan hari ini
@@ -138,8 +138,44 @@ public function laporan()
     }
     $data['chart_data'] = json_encode($monthly);
 
-    $this->load->view('admin/components/header', $data);
-    $this->load->view('admin/pages/kasir/laporan', $data);
+    $this->load->view('config/components/header', $data);
+    $this->load->view('config/pages/kasir/laporan', $data);
+}
+
+
+public function laporan_pdf()
+{
+    $bulan = $this->input->get('bulan');
+    $tahun = $this->input->get('tahun');
+
+    $this->db->select('t.*, p.nama');
+    $this->db->from('transaksi t');
+    $this->db->join('pengguna p', 't.id_pengguna = p.id_pengguna');
+
+    if (!empty($bulan) && !empty($tahun)) {
+        $this->db->where('MONTH(tanggal_transaksi)', $bulan);
+        $this->db->where('YEAR(tanggal_transaksi)', $tahun);
+    }
+
+    $data['transaksi'] = $this->db->order_by('tanggal_transaksi', 'DESC')->get()->result_array();
+
+    $today = date('Y-m-d');
+    $data['total_today'] = $this->db->select_sum('total_harga')
+        ->where('DATE(tanggal_transaksi)', $today)
+        ->get('transaksi')->row()->total_harga ?? 0;
+
+    $data['total_all'] = $this->db->select_sum('total_harga')->get('transaksi')->row()->total_harga ?? 0;
+
+    $data['bulan'] = $bulan;
+    $data['tahun'] = $tahun;
+
+    $html = $this->load->view('config/pages/kasir/laporan_pdf', $data, true);
+
+    $this->load->library('dompdf_gen');
+    $this->dompdf->loadHtml($html);
+    $this->dompdf->setPaper('A4', 'portrait');
+    $this->dompdf->render();
+    $this->dompdf->stream("laporan_transaksi.pdf", array("Attachment" => false));
 }
 
 

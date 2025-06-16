@@ -1,14 +1,14 @@
 <body id="page-top">
     <!-- Page Wrapper -->
     <div id="wrapper">
-        <?php $this->load->view('admin/components/sidebar'); ?>
+        <?php $this->load->view('config/components/sidebar'); ?>
 
         <!-- Content Wrapper -->
         <div id="content-wrapper" class="d-flex flex-column">
             <!-- Main Content -->
             <div id="content">
                 <!-- End of Topbar -->
-                 <?php $this->load->view('admin/components/navbar'); ?>
+                 <?php $this->load->view('config/components/navbar'); ?>
 
                 <!-- Begin Page Content --> <!-- Begin Page Content -->
                 <div class="container-fluid">
@@ -22,30 +22,29 @@
     <h6 class="m-0 font-weight-bold text-primary">Input Data Supplier</h6>
   </div>
   <div class="card-body">
-    <form method="post" action="<?= base_url('admin/penyedia/edited/'.$penyedia['id_penyedia']) ?>">
+    <form method="post" action="<?= base_url('config/penyedia/create') ?>">
       <div class="form-group mb-3">
         <label for="nama">Nama Penyedia</label>
-        <input type="text" class="form-control" id="nama" name="nama_penyedia" placeholder="Masukkan nama penyedia"  value="<?= isset($penyedia['nama_penyedia']) ? $penyedia['nama_penyedia'] : '' ?>"
-       required>
+        <input type="text" class="form-control" id="nama" name="nama_penyedia" placeholder="Masukkan nama penyedia"  value="<?= set_value('nama_penyedia') ?>" required>
         <br>
         <?php echo form_error('nama_penyedia','<div class="alert alert-danger">', '</div>'); ?>
       </div>
 
       <div class="form-group mb-3">
         <label for="no_telp">No. Telepon</label>
-        <input type="tel" class="form-control" id="no_telp" name="no_telp" value="<?= isset($penyedia['no_telp']) ? $penyedia['no_telp'] : '' ?>" placeholder="Masukkan nomor telepon">
+        <input type="tel" class="form-control" id="no_telp" name="no_telp" value="<?= set_value('no_telp') ?>" placeholder="Masukkan nomor telepon">
         <br>
         <?php echo form_error('no_telp','<div class="alert alert-danger">', '</div>'); ?>
       </div>
 
       <div class="form-group mb-3">
         <label for="alamat">Alamat</label>
-        <textarea class="form-control" id="alamat" name="alamat" rows="3" value="<?= isset($penyedia['alamat']) ? $penyedia['alamat'] : '' ?>" placeholder="Masukkan alamat penyedia"></textarea>
+        <textarea class="form-control" id="alamat" name="alamat" rows="3" value="<?= set_value('alamat') ?>" placeholder="Masukkan alamat penyedia"></textarea>
       </div>
 
       <div class="form-group mb-3">
         <label for="catatan">Catatan</label>
-        <textarea class="form-control" id="catatan" name="catatan" rows="2" value="<?= isset($penyedia['catatan']) ? $penyedia['catatan'] : '' ?>" placeholder="Catatan tambahan (opsional)"></textarea>
+        <textarea class="form-control" id="catatan" name="catatan" rows="2" value="<?= set_value('catatan') ?>" placeholder="Catatan tambahan (opsional)"></textarea>
       </div>
 
       <button type="submit" class="btn btn-primary">Simpan</button>
@@ -57,6 +56,8 @@
 </div>
 
                 <!-- /.container-fluid -->
+
+
             </div>
             <!-- End of Main Content -->
 

@@ -9,6 +9,7 @@ class Obat extends CI_Controller {
         $this->load->library('session');
         $this->load->library('form_validation');
         $this->load->model('Obat_model'); // Pastikan ini ada
+        $this->load->model('barang_masuk'); // Pastikan ini ada
 		$this->load->database(); 
     }
 
@@ -37,8 +38,8 @@ class Obat extends CI_Controller {
         $data['title'] = 'Data Obat';
         $data['subTitle'] = 'Pengelolaan Data Obat';
         $data['pengguna'] = $this->db->get_where('pengguna',['email' => $this->session->userdata('email')])->row_array();
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/obat', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/obat', $data);
     }
 
     public function create() {
@@ -47,8 +48,8 @@ class Obat extends CI_Controller {
         $data['kategori'] = $this->db->get('kategori_obat')->result_array(); // ambil semua kategori
         $data['penyedia'] = $this->db->get('penyedia')->result_array(); // ambil semua kategori
         $data['pengguna'] = $this->db->get_where('pengguna',['email' => $this->session->userdata('email')])->row_array();
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/pages/obat/create', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/pages/obat/create', $data);
     }
 
 private function generate_kode_obat() {
@@ -115,7 +116,7 @@ private function generate_kode_obat() {
     $this->db->insert('barang_masuk', $data2);
     // Set flashdata notifikasi sukses
     $this->session->set_flashdata('success', 'Data Obat berhasil ditambahkan.');
-    redirect('admin/obat');
+    redirect('config/obat');
 }
 
     public function edited($id) {
@@ -145,8 +146,8 @@ private function generate_kode_obat() {
 
 
         $data['pengguna'] = $this->db->get_where('pengguna',['email' => $this->session->userdata('email')])->row_array();
-        $this->load->view('admin/components/header', $data);
-        $this->load->view('admin/pages/obat/edited', $data);
+        $this->load->view('config/components/header', $data);
+        $this->load->view('config/pages/obat/edited', $data);
     }
 
     public function edited_post($id) {
@@ -200,7 +201,7 @@ private function generate_kode_obat() {
 
     // Notifikasi sukses
     $this->session->set_flashdata('success', 'Data Obat berhasil diperbarui.');
-    redirect('admin/obat');
+    redirect('config/obat');
 }
 
 public function report_pdf()
@@ -230,7 +231,7 @@ public function report_pdf()
     $data['obat'] = $this->db->get()->result_array();
 
     // Load view ke HTML
-    $html = $this->load->view('admin/pages/obat/obat_pdf', $data, true);
+    $html = $this->load->view('config/pages/obat/obat_pdf', $data, true);
 
     // Load Dompdf
     $this->load->library('dompdf_gen');
@@ -243,12 +244,28 @@ public function report_pdf()
 }
 
 
-    public function delete($id) {
-         if($_SERVER['REQUEST_METHOD'] === 'POST') {
+ public function delete($id) {
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Ambil data obat terlebih dahulu sebelum dihapus
+        $obat = $this->db->get_where('obat', ['id_produk_obat' => $id])->row_array();
+
+        if ($obat) {
+            $kode_obat = $obat['kode_obat'];
+
+            // Hapus dari tabel obat
             $this->Obat_model->delete($id);
-            $this->session->set_flashdata('success','Data Obat berhasil dihapus');
+
+            // Hapus dari tabel barang_masuk jika model tersedia
+            $this->barang_masuk->delete_by_kode_obat($kode_obat);
+
+            $this->session->set_flashdata('success', 'Data Obat berhasil dihapus');
+        } else {
+            $this->session->set_flashdata('error', 'Data Obat tidak ditemukan');
         }
-        redirect('admin/obat');
     }
+
+    redirect('config/obat');
+}
+
 }
 
