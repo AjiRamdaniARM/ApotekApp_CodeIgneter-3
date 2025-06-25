@@ -17,13 +17,7 @@
       <ul class="navbar-nav mb-2 mb-lg-0 gap-3">
         <li class="nav-item">
           <a class="nav-link active text-primary fw-semibold" aria-current="page" href="#">Beranda</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="#">Layanan</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-dark" href="#">Kontak</a>
-        </li>
+        </li> 
       </ul>
     </div>
   </div>

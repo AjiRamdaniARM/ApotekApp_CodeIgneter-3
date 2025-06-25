@@ -59,8 +59,8 @@
 <body onload="window.print()">
     <div class="struk">
         <div class="header text-center">
-            <h2>Apotek Sehat</h2>
-            <p>Jl. Contoh No.123, Sukabumi</p>
+            <h2>Apotek Asmanah Farma</h2>
+            <p>Kp. Simagalih Rt 002 Rw 002 Desa Mekarsari Kecamatan Cikajang Kabupate Garut</p>
         </div>
 
         <div class="info">
@@ -103,7 +103,7 @@
 
         <div class="footer">
             <p>-- Terima kasih telah berbelanja --</p>
-            <p>Apotek Sehat | <?= date('d/m/Y') ?></p>
+            <p>Apotek Asmanah Farma | <?= date('d/m/Y') ?></p>
         </div>
     </div>
 </body>

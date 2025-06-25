@@ -92,91 +92,99 @@
                             <th>Aksi</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php if (!empty($obat)) : ?>
-                            <?php $no = 1; foreach ($obat as $row) :
-                                // Cek isi dari tanggal di database
-                                    $tanggal_dibuat_obj = date_create($row['tanggal_masuk']); // ← ini harus dari kolom "dibuat_di"
-                                    $tanggal_kadaluarsa_obj = date_create($row['tanggak_kadaluarsa']); // ← dari kolom "tanggak_kadaluarsa"
+                  <tbody>
+                    <?php if (!empty($obat)) : ?>
+                        <?php $no = 1; foreach ($obat as $row) :
+                            // Format tanggal masuk dan tanggal kadaluarsa
+                            $tanggal_dibuat_obj = date_create($row['tanggal_masuk']);
+                            $tanggal_kadaluarsa_obj = date_create($row['tanggak_kadaluarsa']);
 
-                                    $tanggal_dibuat = date_format($tanggal_dibuat_obj, 'd');
-                                    $bulan_dibuat = date_format($tanggal_dibuat_obj, 'm');
-                                    $tahun_dibuat = date_format($tanggal_dibuat_obj, 'Y');
+                            $tanggal_dibuat = date_format($tanggal_dibuat_obj, 'd');
+                            $bulan_dibuat = date_format($tanggal_dibuat_obj, 'm');
+                            $tahun_dibuat = date_format($tanggal_dibuat_obj, 'Y');
 
-                                    $tanggal_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'd');
-                                    $bulan_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'm');
-                                    $tahun_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'Y');
+                            $tanggal_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'd');
+                            $bulan_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'm');
+                            $tahun_kadaluarsa = date_format($tanggal_kadaluarsa_obj, 'Y');
 
-                                    $bulan_indonesia = [
-                                        '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
-                                        '04' => 'April', '05' => 'Mei', '06' => 'Juni',
-                                        '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
-                                        '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
-                                    ];
+                            $bulan_indonesia = [
+                                '01' => 'Januari', '02' => 'Februari', '03' => 'Maret',
+                                '04' => 'April', '05' => 'Mei', '06' => 'Juni',
+                                '07' => 'Juli', '08' => 'Agustus', '09' => 'September',
+                                '10' => 'Oktober', '11' => 'November', '12' => 'Desember'
+                            ];
 
-                                    $tgl_dibuat_format = $tanggal_dibuat . ' ' . $bulan_indonesia[$bulan_dibuat] . ' ' . $tahun_dibuat;
-                                    $tgl_kadaluarsa_format = $tanggal_kadaluarsa . ' ' . $bulan_indonesia[$bulan_kadaluarsa] . ' ' . $tahun_kadaluarsa;
-                                ?>
-                                <tr>
-                                    <td><?= $no++; ?></td>
-                                    <td><?= $row['kode_obat']; ?></td>
-                                    <td><?= $row['nama']; ?></td>
-                                    <td><?= $row['nama_tipe']; ?></td>
-                                    <td>Rp<?= number_format($row['harga_pembelian'], 0, ',', '.'); ?></td>
-                                    <td>Rp<?= number_format($row['harga_penjualan'], 0, ',', '.'); ?></td>
-                                    <td><?= $row['stok']; ?></td>
-                                    <td><?= $row['tipe_obat']; ?></td>
-                                    <td><?= $row['nama_penyedia']; ?></td>
-                                    <td>
-                                        <?php
-                                            $status = strtolower($row['status']);
-                                            $badgeColor = 'gray'; // default
-                                            $textColor = 'white';
+                            $tgl_dibuat_format = $tanggal_dibuat . ' ' . $bulan_indonesia[$bulan_dibuat] . ' ' . $tahun_dibuat;
+                            $tgl_kadaluarsa_format = $tanggal_kadaluarsa . ' ' . $bulan_indonesia[$bulan_kadaluarsa] . ' ' . $tahun_kadaluarsa;
 
-                                            if ($status == 'terima') {
-                                                $badgeColor = 'green';
-                                            } elseif ($status == 'proses') {
-                                                $badgeColor = 'orange';
-                                            } elseif ($status == 'tolak') {
-                                                $badgeColor = 'red';
-                                            }
-                                        ?>
-                                        <span style="
-                                            background-color: <?= $badgeColor ?>;
-                                            color: <?= $textColor ?>;
-                                            padding: 4px 10px;
-                                            border-radius: 999px;
-                                            font-size: 12px;
-                                            font-weight: bold;
-                                            display: inline-block;
-                                            text-transform: capitalize;
-                                        ">
-                                            <?= $status ?>
-                                        </span>
-                                    </td>
+                            // Tentukan status (cek expired)
+                            $status = strtolower($row['status']);
+                            $today = date('Y-m-d');
 
+                            // Jika kadaluarsa sudah lewat, ubah status ke 'expired'
+                            if (strtotime($row['tanggak_kadaluarsa']) < strtotime($today)) {
+                                $status = 'expired';
+                            }
 
-                                    <td><?= $tgl_dibuat_format ?></td>
-                                    <td><?= $tgl_kadaluarsa_format ?></td>
+                            // Badge color
+                            $badgeColor = 'gray'; // default
+                            $textColor = 'white';
 
-                                    <td>
-                                        <a href="<?= base_url('config/obat/edited/' . $row['id_produk_obat']); ?>" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <form action="<?= base_url('config/obat/delete/' . $row['id_produk_obat']); ?>" method="post" class="d-inline form-delete">
-                                            <button type="submit" class="btn btn-danger btn-sm btn-delete">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else : ?>
+                            if ($status == 'terima') {
+                                $badgeColor = 'green';
+                            } elseif ($status == 'proses') {
+                                $badgeColor = 'orange';
+                            } elseif ($status == 'tolak') {
+                                $badgeColor = 'red';
+                            } elseif ($status == 'expired') {
+                                $badgeColor = '#6c757d'; // abu-abu gelap (dark gray)
+                            }
+                        ?>
                             <tr>
-                                <td colspan="13" class="text-center">Tidak ada data obat ditemukan.</td>
+                                <td><?= $no++; ?></td>
+                                <td><?= $row['kode_obat']; ?></td>
+                                <td><?= $row['nama']; ?></td>
+                                <td><?= $row['nama_tipe']; ?></td>
+                                <td>Rp<?= number_format($row['harga_pembelian'], 0, ',', '.'); ?></td>
+                                <td>Rp<?= number_format($row['harga_penjualan'], 0, ',', '.'); ?></td>
+                                <td><?= $row['stok']; ?></td>
+                                <td><?= $row['tipe_obat']; ?></td>
+                                <td><?= $row['nama_penyedia']; ?></td>
+                                <td>
+                                    <span style="
+                                        background-color: <?= $badgeColor ?>;
+                                        color: <?= $textColor ?>;
+                                        padding: 4px 10px;
+                                        border-radius: 999px;
+                                        font-size: 12px;
+                                        font-weight: bold;
+                                        display: inline-block;
+                                        text-transform: capitalize;
+                                    ">
+                                        <?= $status ?>
+                                    </span>
+                                </td>
+                                <td><?= $tgl_dibuat_format ?></td>
+                                <td><?= $tgl_kadaluarsa_format ?></td>
+                                <td>
+                                    <a href="<?= base_url('config/obat/edited/' . $row['id_produk_obat']); ?>" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="<?= base_url('config/obat/delete/' . $row['id_produk_obat']); ?>" method="post" class="d-inline form-delete" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                        <button type="submit" class="btn btn-danger btn-sm btn-delete">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
+                        <?php endforeach; ?>
+                    <?php else : ?>
+                        <tr>
+                            <td colspan="13" class="text-center">Tidak ada data obat ditemukan.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+
                 </table>
                             </div>
                         </div>

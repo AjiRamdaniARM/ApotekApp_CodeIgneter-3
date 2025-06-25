@@ -8,6 +8,8 @@ class Kasir extends CI_Controller {
         // (opsional) load library/session/model di sini
         $this->load->library('session');
         $this->load->library('form_validation');
+        $this->load->model('transaksi');
+        $this->load->model('detail_transaksi');
 		$this->load->database(); 
     }
 
@@ -28,54 +30,67 @@ class Kasir extends CI_Controller {
         $this->load->view('config/components/header', $data);
         $this->load->view('config/kasir', $data);
     }
-  public function simpan_transaksi()
-{
-    $keranjang = json_decode($this->input->post('keranjang_data'), true);
-    $total_harga = $this->input->post('total_hidden');
-    $bayar = str_replace(['Rp.', '.', ' '], '', $this->input->post('bayar'));
-    $id_pengguna = $this->session->userdata('id_pengguna');
-    $tanggal_sekarang = date('Y-m-d H:i:s');
+    public function simpan_transaksi()
+    {
+        $keranjang = json_decode($this->input->post('keranjang_data'), true);
+        $total_harga = $this->input->post('total_hidden');
+        $bayar = str_replace(['Rp.', '.', ' '], '', $this->input->post('bayar'));
+        $id_pengguna = $this->session->userdata('id_pengguna');
+        $tanggal_sekarang = date('Y-m-d H:i:s');
 
-    // Generate kode transaksi unik
-    $kode_transaksi = 'TRX' . date('YmdHis') . rand(100, 999);
+        // Generate kode transaksi unik
+        $kode_transaksi = 'TRX' . date('YmdHis') . rand(100, 999);
 
-    // Simpan ke tabel transaksi
-    $transaksi_data = [
-        'transaksi_kode' => $kode_transaksi,
-        'id_pengguna' => $id_pengguna,
-        'total_harga' => $total_harga,
-        'bayar' => $bayar,
-        'metode_pembayaran' => 'Tunai',
-        'tanggal_transaksi' => $tanggal_sekarang,
-        'dibuat_di' => $tanggal_sekarang,
-        'diperbarui_di' => $tanggal_sekarang,
-    ];
+        // ======= CEK STOK DULU SEBELUM SIMPAN TRANSAKSI =======
+        foreach ($keranjang as $item) {
+            $obat = $this->db->get_where('obat', ['id_produk_obat' => $item['id']])->row();
+            if ($obat->stok < $item['qty']) {
+                $this->session->set_flashdata('error', 'Stok tidak cukup untuk obat: ' . $obat->nama_obat);
+                redirect('config/kasir'); // batalkan transaksi
+                return;
+            }
+        }
 
-    $this->db->insert('transaksi', $transaksi_data);
-
-    // Simpan detail transaksi
-    foreach ($keranjang as $item) {
-        $detail = [
+        // ======= SIMPAN TRANSAKSI UTAMA =======
+        $transaksi_data = [
             'transaksi_kode' => $kode_transaksi,
-            'id_produk_obat' => $item['id'],
-            'harga' => $item['harga'],
-            'jumlah' => $item['qty'],
-            'total' => $item['harga'] * $item['qty'],
+            'id_pengguna' => $id_pengguna,
+            'total_harga' => $total_harga,
+            'bayar' => $bayar,
+            'metode_pembayaran' => 'Tunai',
+            'tanggal_transaksi' => $tanggal_sekarang,
             'dibuat_di' => $tanggal_sekarang,
             'diperbarui_di' => $tanggal_sekarang,
         ];
-        $this->db->insert('detail_transaksi', $detail);
+        $this->db->insert('transaksi', $transaksi_data);
 
-        // Update stok obat
-        $this->db->set('stok', 'stok - ' . $item['qty'], FALSE)
-                 ->where('id_produk_obat', $item['id'])
-                 ->update('obat');
+        // ======= SIMPAN DETAIL & KURANGI STOK =======
+        foreach ($keranjang as $item) {
+            // Simpan detail transaksi
+            $detail = [
+                'transaksi_kode' => $kode_transaksi,
+                'id_produk_obat' => $item['id'],
+                'harga' => $item['harga'],
+                'jumlah' => $item['qty'],
+                'total' => $item['harga'] * $item['qty'],
+                'dibuat_di' => $tanggal_sekarang,
+                'diperbarui_di' => $tanggal_sekarang,
+            ];
+            $this->db->insert('detail_transaksi', $detail);
+
+            // Kurangi stok secara aman
+            $obat = $this->db->get_where('obat', ['id_produk_obat' => $item['id']])->row();
+            $sisa_stok = max(0, $obat->stok - $item['qty']);
+
+            $this->db->set('stok', $sisa_stok)
+                    ->where('id_produk_obat', $item['id'])
+                    ->update('obat');
+        }
+
+        // Redirect ke struk
+        $this->session->set_flashdata('success', 'Transaksi berhasil disimpan!');
+        redirect('config/kasir/cetak_struk/' . $kode_transaksi);
     }
-
-    // Redirect ke struk
-    $this->session->set_flashdata('success', 'Transaksi berhasil disimpan!');
-    redirect('config/kasir/cetak_struk/' . $kode_transaksi);
-}
 
 
 public function cetak_struk($kode_transaksi)
@@ -177,6 +192,31 @@ public function laporan_pdf()
     $this->dompdf->render();
     $this->dompdf->stream("laporan_transaksi.pdf", array("Attachment" => false));
 }
+
+public function hapus($kode_transaksi)
+{
+    if ($this->input->server('REQUEST_METHOD') === 'POST') {
+        // Cek apakah data transaksi dan detailnya ada
+        $transaksi = $this->db->get_where('transaksi', ['transaksi_kode' => $kode_transaksi])->row_array();
+
+        if ($transaksi) {
+            // Hapus detail transaksi terlebih dahulu (jika banyak, pakai delete where)
+            $this->db->delete('detail_transaksi', ['transaksi_kode' => $kode_transaksi]);
+
+            // Hapus transaksi utama
+            $this->db->delete('transaksi', ['transaksi_kode' => $kode_transaksi]);
+
+            $this->session->set_flashdata('success', 'Data transaksi berhasil dihapus.');
+        } else {
+            $this->session->set_flashdata('error', 'Data transaksi tidak ditemukan.');
+        }
+    } else {
+        show_error('Metode tidak diizinkan', 405);
+    }
+
+    redirect('config/kasir/laporan');
+}
+
 
 
 

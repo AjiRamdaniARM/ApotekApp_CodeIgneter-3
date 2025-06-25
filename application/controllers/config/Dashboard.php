@@ -48,6 +48,8 @@ public function index()
         $data['total_obat'] = $this->db->count_all('obat');
         $data['stok_habis'] = $this->db->where('stok', 0)->count_all_results('obat');
         $data['total_transaksi'] = $this->db->count_all('transaksi');
+        $data['total_obat_kedaluarsa'] = $this->db->where('tanggak_kadaluarsa <=', date('Y-m-d'))->count_all_results('obat');
+
 
         // Data chart pendapatan per bulan
         $monthly = [];

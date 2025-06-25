@@ -16,7 +16,14 @@
             <div class="container-fluid">
                 <h1 class="h3 mb-4 text-gray-800"><?= $title ?></h1>
                 <p class="mb-4"><?= $subTitle ?></p>
-
+                  <!-- === component alert ===  -->
+                    <?php if ($this->session->flashdata('success')): ?>
+                        <div class="alert alert-success alert-dismissible fade show d-flex justify-content-between align-items-center" role="alert">
+                            <div><?= $this->session->flashdata('success'); ?></div>
+                            <i class="fas fa-times text-dark ms-3" style="cursor:pointer;" onclick="this.closest('.alert').remove();"></i>
+                        </div>
+                    <?php endif; ?>
+                    <!-- === end component alert ===  -->
                 <!-- Summary Cards -->
                 <div class="row">
                     <div class="col-md-6">
@@ -39,39 +46,36 @@
 
                 <!-- Riwayat Transaksi Table -->
                 <div class="card shadow mb-4">
-            <form method="GET" action="<?= base_url('config/kasir/laporan_pdf') ?>" target="_blank" class="mb-3 px-3 py-3">
-                <div class="row">
-                    <div class="col-md-3">
-                        <select name="bulan" class="form-control">
-                            <option value="">-- Pilih Bulan --</option>
-                            <?php for ($b = 1; $b <= 12; $b++): ?>
-                                <option value="<?= $b ?>"><?= date('F', mktime(0, 0, 0, $b, 1)) ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select name="tahun" class="form-control">
-                            <option value="">-- Pilih Tahun --</option>
-                            <?php for ($y = date('Y'); $y >= 2020; $y--): ?>
-                                <option value="<?= $y ?>"><?= $y ?></option>
-                            <?php endfor; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fas fa-file-pdf"></i> Export PDF
-                        </button>
-                    </div>
-                    <div class="col-md-3">
-                        <a href="<?= base_url('config/kasir/laporan_pdf?all=1') ?>" target="_blank" class="btn btn-secondary">
-                            <i class="fas fa-file-alt"></i> Export Semua Data
-                        </a>
-                    </div>
-                </div>
-            </form>
-
-
-
+                    <form method="GET" action="<?= base_url('config/kasir/laporan_pdf') ?>" target="_blank" class="mb-3 px-3 py-3">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <select name="bulan" class="form-control">
+                                    <option value="">-- Pilih Bulan --</option>
+                                    <?php for ($b = 1; $b <= 12; $b++): ?>
+                                        <option value="<?= $b ?>"><?= date('F', mktime(0, 0, 0, $b, 1)) ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <select name="tahun" class="form-control">
+                                    <option value="">-- Pilih Tahun --</option>
+                                    <?php for ($y = date('Y'); $y >= 2020; $y--): ?>
+                                        <option value="<?= $y ?>"><?= $y ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-file-pdf"></i> Export PDF
+                                </button>
+                            </div>
+                            <div class="col-md-3">
+                                <a href="<?= base_url('config/kasir/laporan_pdf?all=1') ?>" target="_blank" class="btn btn-secondary">
+                                    <i class="fas fa-file-alt"></i> Export Semua Data
+                                </a>
+                            </div>
+                        </div>
+                    </form>
                     <div class="card-header py-3">
                         <h6 class="m-0 font-weight-bold text-primary">Riwayat Transaksi</h6>
                     </div>
@@ -97,6 +101,10 @@
                                             <a href="<?= base_url('config/kasir/cetak_struk/' . $t['transaksi_kode']) ?>" target="_blank" class="btn btn-sm btn-primary">
                                                 Struk
                                             </a>
+                                            <form action="<?= base_url('config/kasir/hapus/' . $t['transaksi_kode']) ?>" method="POST" style="display: inline;" class="form-delete">
+                                                <button type="submit" class="btn btn-sm btn-danger">Hapus</button>
+                                            </form>
+
                                         </td>
                                     </tr>
                                 <?php endforeach ?>
@@ -184,4 +192,27 @@
 
 <!-- Custom scripts for all pages-->
 <script src="<?= base_url('vendor/startbootstrap-sb-admin-2-gh-pages/js/sb-admin-2.min.js') ?>"></script>
+<script>
+        document.querySelectorAll('.form-delete').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault(); // stop form submit dulu
+
+                Swal.fire({
+                    title: 'Yakin hapus data?',
+                    text: "Data yang dihapus tidak bisa dikembalikan!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Kalau user klik "Ya", submit form secara manual
+                        form.submit();
+                    }
+                });
+            });
+        });
+    </script>
 </body>

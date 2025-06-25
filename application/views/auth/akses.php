@@ -1,44 +1,113 @@
-<!-- === Stylish Role Selection Section === -->
-<section class="container d-flex align-items-center justify-content-center min-vh-100 ">
-  <div class="row w-100  p-5" >
-    
-    <!-- === Akses Buttons with modern style === -->
-    <div class="col-lg-6 d-flex flex-column justify-content-center gap-4 px-4">
-      <h2 class="fw-bold mb-4">Masuk Sebagai</h2>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-4 p-4">
 
-      <!--  === akses admin  === -->
-      <button onclick="window.location.href='<?= base_url('auth/loginAdmin') ?>'" 
-              class="btn btn-lg rounded-4 d-flex align-items-center justify-content-start gap-3 px-4 py-3 text-white shadow-sm border-0"
-              style="background: linear-gradient(135deg, #6C63FF, #8E85F3);">
-        <i class="bi bi-person-badge fs-4"></i>
-        <span class="fs-5">Admin</span>
-      </button>
+                <!-- === Breadcrumb === -->
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb bg-light rounded-pill px-3 py-2">
+                        <li class="breadcrumb-item"><a href="#">Beranda</a></li>
+                        <li class="breadcrumb-item"><a href="#">Masuk</a></li>
+                        <li class="breadcrumb-item active text-primary fw-bold" aria-current="page">Dashboard</li>
+                    </ol>
+                </nav>
 
-      <!--  === akses kasir  === -->
-      <button onclick="window.location.href='<?= base_url('auth/loginKasir') ?>'" 
-              class="btn btn-lg rounded-4 d-flex align-items-center justify-content-start gap-3 px-4 py-3 text-white shadow-sm border-0"
-              style="background: linear-gradient(135deg, #00B894, #00CEC9);">
-        <i class="bi bi-cash-stack fs-4"></i>
-        <span class="fs-5">Kasir</span>
-      </button>
+                <!-- === Flash Message === -->
+                <?php if ($this->session->flashdata('message')): ?>
+                    <?= $this->session->flashdata('message'); ?>
+                <?php endif; ?>
 
-      <!--  === akses owner  === -->
-      <button onclick="window.location.href='<?= base_url('auth/loginOwner') ?>'" 
-              class="btn btn-lg rounded-4 d-flex align-items-center justify-content-start gap-3 px-4 py-3 text-dark shadow-sm border-0"
-              style="background: linear-gradient(135deg, #FFEAA7, #FAB1A0);">
-        <i class="bi bi-person-check fs-4"></i>
-        <span class="fs-5">Owner</span>
-      </button>
+                <!-- === Profile Image === -->
+                <div class="text-center mb-4">
+                    <img src="https://i.pinimg.com/736x/13/44/88/1344881a0b7b7b4a766621adbaafa811.jpg"
+                        class="rounded-circle  shadow" 
+                        style="width: 120px; height: 120px; object-fit: cover; margin-left: 11em"
+                        alt="Foto Profil Admin">
+                    <h5 class="mt-3 fw-semibold text-primary">Login Dashboard</h5>
+                </div>
+
+
+                <!-- === Form === -->
+                <form action="<?= base_url('auth/loginAdmin') ?>" method="POST" class="px-1">
+                    <!-- Hidden Role -->
+                    <input type="hidden" name="akses">
+                    <!-- Email -->
+                    <!-- <div class="mb-3" style="display: none;">
+                        <label for="email" class="form-label text-muted">Email</label>
+                        <input type="email" value="<?= $email['email'] ?>" class="form-control rounded-pill px-4 py-2" name="email" id="email" placeholder="Email Anda" required>
+                    </div> -->
+                  <div class="mb-4">
+                    <div class="input-group">
+                       <select name="email" class="form-control rounded-pill px-4 py-2" required>
+                          <option value="">Pilih Akses</option>
+                          <?php foreach ($user as $key => $value): ?>
+                            <option value="<?= $value['email'] ?>"><?= $value['nama'] ?> (<?= $value['email'] ?>)</option>
+                          <?php endforeach; ?>
+                        </select>
+                    </div>
+                  </div>
+
+
+                    <!-- Password -->
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <input type="password" class="form-control rounded-start-pill px-4 py-2" id="password" name="password" placeholder="Kata Sandi Anda" required>
+                            <span class="input-group-text rounded-end-pill" onclick="togglePassword()" style="cursor: pointer;">
+                                <i class="bi bi-eye" id="toggleIcon"></i>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary rounded-pill py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Masuk Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+</div>
+<style>
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 0.2rem rgba(32, 92, 154, 0.25);
+        border-color: #205C9A;
+    }
 
-    <!-- === Lottie Animation Section === -->
-    <div class="col-lg-6 d-flex justify-content-center align-items-center">
-      <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-      <dotlottie-player 
-        src="https://lottie.host/9b8d5798-b2fe-45bd-a53a-a69152c23105/3ETyFIDua5.lottie" 
-        background="transparent" 
-        speed="1"  
-        loop autoplay></dotlottie-player>
-    </div>
-  </div>
-</section>
+    .breadcrumb {
+        font-size: 0.85rem;
+        background-color: #f5f8ff;
+    }
+
+    .card {
+        background-color: #ffffff;
+        transition: 0.3s ease-in-out;
+    }
+
+    .btn-primary {
+        background-color: #205C9A;
+        border-color: #205C9A;
+    }
+
+    .btn-primary:hover {
+        background-color: #174678;
+        border-color: #174678;
+    }
+</style>
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById("password");
+    const toggleIcon = document.getElementById("toggleIcon");
+
+    if (passwordInput.type === "password") {
+      passwordInput.type = "text";
+      toggleIcon.classList.remove("bi-eye");
+      toggleIcon.classList.add("bi-eye-slash");
+    } else {
+      passwordInput.type = "password";
+      toggleIcon.classList.remove("bi-eye-slash");
+      toggleIcon.classList.add("bi-eye");
+    }
+  }
+</script>

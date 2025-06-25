@@ -48,7 +48,8 @@
               </div>
 
               <!-- Form Transaksi -->
-              <form id="form-transaksi" method="post" action="<?= base_url('config/kasir/simpan_transaksi') ?>">
+            <form id="form-transaksi" method="post" onsubmit="return validasiQty();" action="<?= base_url('config/kasir/simpan_transaksi') ?>">
+
                 <div class="table-responsive">
                   <table class="table table-bordered">
                     <thead class="thead-light">
@@ -131,69 +132,77 @@ function formatRupiah(el, prefix) {
     el.value = prefix + rupiah;
 }
 </script>
-  <script>
-    $(function() {
-      $('#obat-select').select2();
+<script>
+  $(function() {
+    $('#obat-select').select2();
+  });
+
+  let keranjang = [];
+
+  function tambahObat() {
+    const select = $('#obat-select option:selected');
+    const id = select.val();
+    const nama = select.data('nama');
+    const harga = parseInt(select.data('harga'));
+    const stok = parseInt(select.data('stok'));
+
+    if (!id) return;
+
+    const index = keranjang.findIndex(item => item.id === id);
+    if (index >= 0) {
+      if (keranjang[index].qty < stok) {
+        keranjang[index].qty++;
+      } else {
+        alert('Jumlah melebihi stok!');
+      }
+    } else {
+      keranjang.push({ id, nama, harga, qty: 1, stok });
+    }
+
+    renderKeranjang();
+  }
+
+  function renderKeranjang() {
+    let html = '', total = 0;
+
+    keranjang.forEach((item, i) => {
+      const subtotal = item.harga * item.qty;
+      total += subtotal;
+      html += `
+        <tr>
+          <td>${item.nama}</td>
+          <td>Rp ${item.harga.toLocaleString()}</td>
+          <td>
+            <input type="number" min="1" max="${item.stok}" value="${item.qty}" onchange="ubahQty(${i}, this.value)">
+          </td>
+          <td>Rp ${subtotal.toLocaleString()}</td>
+          <td><button type="button" class="btn btn-sm btn-danger" onclick="hapusItem(${i})">Hapus</button></td>
+        </tr>`;
     });
 
-    let keranjang = [];
+    $('#keranjang-body').html(html);
+    $('#total').text(total.toLocaleString());
+    $('#total_hidden').val(total);
+    $('#keranjang_data').val(JSON.stringify(keranjang));
+  }
 
-    function tambahObat() {
-      const select = $('#obat-select option:selected');
-      const id = select.val();
-      const nama = select.data('nama');
-      const harga = parseInt(select.data('harga'));
-      const stok = parseInt(select.data('stok'));
-
-      if (!id) return;
-
-      const index = keranjang.findIndex(item => item.id === id);
-      if (index >= 0) {
-        if (keranjang[index].qty < stok) keranjang[index].qty++;
-      } else {
-        keranjang.push({ id, nama, harga, qty: 1 });
-      }
-
-      renderKeranjang();
+  function ubahQty(index, qty) {
+    qty = parseInt(qty);
+    if (qty > 0 && qty <= keranjang[index].stok) {
+      keranjang[index].qty = qty;
+    } else {
+      alert('Jumlah melebihi stok!');
+      keranjang[index].qty = keranjang[index].stok;
     }
+    renderKeranjang();
+  }
 
-    function renderKeranjang() {
-      let html = '', total = 0;
+  function hapusItem(index) {
+    keranjang.splice(index, 1);
+    renderKeranjang();
+  }
 
-      keranjang.forEach((item, i) => {
-        const subtotal = item.harga * item.qty;
-        total += subtotal;
-        html += `
-          <tr>
-            <td>${item.nama}</td>
-            <td>Rp ${item.harga.toLocaleString()}</td>
-            <td><input type="number" min="1" value="${item.qty}" onchange="ubahQty(${i}, this.value)"></td>
-            <td>Rp ${subtotal.toLocaleString()}</td>
-            <td><button type="button" class="btn btn-sm btn-danger" onclick="hapusItem(${i})">Hapus</button></td>
-          </tr>`;
-      });
-
-      $('#keranjang-body').html(html);
-      $('#total').text(total.toLocaleString());
-      $('#total_hidden').val(total);
-      $('#keranjang_data').val(JSON.stringify(keranjang));
-    }
-
-    function ubahQty(index, qty) {
-      qty = parseInt(qty);
-      if (qty > 0) {
-        keranjang[index].qty = qty;
-        renderKeranjang();
-      }
-    }
-
-    function hapusItem(index) {
-      keranjang.splice(index, 1);
-      renderKeranjang();
-    }
-
-    function hitungKembalian(bayarFormatted) {
-    // Hilangkan 'Rp.' dan titik ribuan
+  function hitungKembalian(bayarFormatted) {
     let bayar = bayarFormatted.replace(/[^0-9]/g, '');
     bayar = parseInt(bayar || 0);
 
@@ -201,7 +210,39 @@ function formatRupiah(el, prefix) {
     const kembalian = bayar - total;
 
     $('#kembalian').text('Rp ' + kembalian.toLocaleString('id-ID'));
-}
+  }
 
-  </script>
+  function validasiQty() {
+    if (keranjang.length === 0) {
+      alert("Keranjang kosong!");
+      return false;
+    }
+
+    for (let item of keranjang) {
+      if (item.qty > item.stok) {
+        alert(`Jumlah obat "${item.nama}" melebihi stok (${item.stok})`);
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function formatRupiah(el, prefix) {
+    let number_string = el.value.replace(/[^,\d]/g, '').toString(),
+        split = number_string.split(','),
+        sisa  = split[0].length % 3,
+        rupiah = split[0].substr(0, sisa),
+        ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+    if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    el.value = prefix + rupiah;
+  }
+</script>
+
 </body>

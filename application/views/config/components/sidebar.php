@@ -6,7 +6,7 @@
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas fa-laugh-wink"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">APOTEK APP</div>
+        <div class="sidebar-brand-text text-left mx-3" style="font-size: 12px;">Apotek Asmanah Farma</div>
     </a>
 
     <!-- Heading -->
@@ -78,7 +78,7 @@
         <!-- Menu khusus OWNER -->
          <!-- Nav Item - Dashboard -->
         <li class="nav-item">
-            <a class="nav-link" href="<?= base_url('config/admin') ?>">
+            <a class="nav-link" href="<?= base_url('config/dashboard') ?>">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>Beranda</span>
             </a>
