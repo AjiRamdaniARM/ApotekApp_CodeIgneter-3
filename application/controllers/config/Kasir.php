@@ -23,8 +23,12 @@ class Kasir extends CI_Controller {
             'email' => $this->session->userdata('email')
         ])->row_array();
 
-        // Ambil data obat dari database
-        $data['obat'] = $this->db->get_where('obat',['status' => 'terima'])->result_array();
+        // Ambil data obat dari database yang status-nya 'terima' dan belum expired
+        $today = date('Y-m-d');
+        $this->db->where('status', 'terima');
+        $this->db->where('tanggak_kadaluarsa >=', $today);
+        $data['obat'] = $this->db->get('obat')->result_array();
+
 
         // Tampilkan halaman kasir
         $this->load->view('config/components/header', $data);

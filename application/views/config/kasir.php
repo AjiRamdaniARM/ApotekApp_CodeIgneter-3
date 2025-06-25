@@ -68,7 +68,7 @@
                 <!-- Total Bayar -->
                 <p class="font-weight-bold mt-3">Total: Rp <span id="total">0</span></p>
                 <input type="text" name="bayar" class="form-control mb-2" placeholder="Jumlah Bayar" required 
-    oninput="formatRupiah(this, 'Rp. '); hitungKembalian(this.value)">
+               oninput="formatRupiah(this, 'Rp. '); hitungKembalian(this.value)">
 
                 <p class="font-weight-bold">Kembalian: <span id="kembalian">0</span></p>
 
